@@ -1,5 +1,11 @@
 Revision history for Perl extension Class::Phrasebook.
 
+0.88  Wed Feb 19 13:01:49 CET 2003
+	- Fixed the way absolute path is identified for cygwin OS.
+
+0.87  Sun Feb  9 12:30:00 CET 2003
+	- See Phrasebook::SQL Changes file.
+
 0.86  Fri Nov  8 21:36:48 CET 2002
 	- Fixed a bug on Windows OS where absolute path was not 
 	  identified correctly. 

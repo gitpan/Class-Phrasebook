@@ -2,7 +2,7 @@ package Class::Phrasebook;
 
 use strict;
 
-our $VERSION = '0.86';
+our $VERSION = '0.88';
 
 
 use Term::ANSIColor 1.03 qw(:constants);
@@ -560,6 +560,7 @@ sub is_absolute_path {
     }
     # the different Operating Systems
     my %operating_systems = ( "mswin32"  => '^(?:[a-zA-Z]:)?[\\\/]+',
+			      "cygwin"   => '^([A-Za-z]:)|^(\/)',
                               "linux"    => '^\/');    
     my $os = lc($^O);
     my $reg_expression = $operating_systems{$os} || 
@@ -799,7 +800,7 @@ Access method to the DICTIONARY_NAME data member. See I<load> method above.
 =item remove_new_lines ( BOOLEAN )
 
 Access method to the data member REMOVE_NEW_LINES flag. If this data member 
-is true (1), then new lines will be removed from the phrase that a is 
+is 1 (TRUE), then new lines will be removed from the phrase that a is 
 returned by the method I<get>. Unset by default.
 Returns the value of the data member REMOVE_NEW_LINES flag.
 

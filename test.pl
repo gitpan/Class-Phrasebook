@@ -1,6 +1,6 @@
 # Before `make install' is performed this script should be runnable with
 # `make test'. After `make install' it should work as `perl test.pl'
-BEGIN { $| = 1; print "1..16\n"; }
+BEGIN { $| = 1; print "1..17\n"; }
 END {print "not ok 1\n" unless $loaded;}
 use Class::Phrasebook;
 use Log::LogLite;
@@ -97,6 +97,12 @@ print_ok(Class::Phrasebook->Dictionaries_names_in_cache() == 1, 15,
 $pb = undef;
 print_ok(Class::Phrasebook->Dictionaries_names_in_cache() == 0, 16, 
 	 "cache is empty");
+
+my $pb = new Class::Phrasebook($log, "test.xml");
+$pb->load("EN");
+$phrase = $pb->get("THE_HOUR", { hour => '$hour_str' });
+print_ok(clean_whites($phrase) eq clean_whites('The time now is $hour_str.'), 
+	 17, "placeholder contains \$ and place_holders_conatain_dollars(0)");
 
 
 

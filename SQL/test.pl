@@ -6,7 +6,7 @@
 # Change 1..1 below to 1..last_test_to_print .
 # (It may become useful if the test is moved to ./t subdirectory.)
 
-BEGIN { $| = 1; print "1..15\n"; }
+BEGIN { $| = 1; print "1..17\n"; }
 END {print "not ok 1\n" unless $loaded;}
 use Class::Phrasebook::SQL;
 use Log::LogLite;
@@ -143,6 +143,19 @@ print_ok(clean_whites($statement) eq
 $statement = $sql->get("UPDATE_NO_WHERE");
 print_ok(clean_whites($statement) eq 
 	 clean_whites(q(update table set i=1)), 15, "short update");
+
+
+$statement = $sql->get("GET_SEQUENCE", { name => '$cookie' } );
+print_ok(clean_whites($statement) eq 
+	 clean_whites(q(select val from t_seq where name = '')), 16, 
+	 "placeholder contains \$ and place_holders_conatain_dollars(0)");
+
+
+$sql->place_holders_conatain_dollars(1);
+$statement = $sql->get("GET_SEQUENCE", { name => '$cookie' } );
+print_ok(clean_whites($statement) eq 
+	 clean_whites(q(select val from t_seq where name = '$cookie')), 17, 
+	 "placeholder contains \$ and place_holders_conatain_dollars(1)");
 
 
 
