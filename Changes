@@ -1,5 +1,8 @@
 Revision history for Perl extension Class::Phrasebook.
 
+0.85  Tue Sep 24 14:11:39 CEST 2002
+        - Just fixed the copyright notice.  
+
 0.84  Thu Aug  1 12:01:23 CEST 2002
 	- Added the class method clean_out_of_scope_dictionaries.
 

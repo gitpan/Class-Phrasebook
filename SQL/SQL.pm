@@ -9,7 +9,7 @@ use bytes;
 # reset to normal at the end of each line.
 $Term::ANSIColor::AUTORESET = 1;
 
-our $VERSION = '0.83';
+our $VERSION = '0.85';
 
 ###################################################################
 # $statement = get($key, { var1 => $value1, var2 => value2 ... })
@@ -494,7 +494,7 @@ Rani Pinchuk, rani@cpan.org
 
 =head1 COPYRIGHT
 
-Copyright (c) 2001 EM-TECH (www.em-tech.net) & Rani Pinchuk. 
+Copyright (c) 2001-2002 Ockham Technology N.V. & Rani Pinchuk. 
 All rights reserved.  
 This package is free software; you can redistribute it and/or modify 
 it under the same terms as Perl itself.

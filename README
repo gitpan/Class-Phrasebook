@@ -1,7 +1,7 @@
                             Class::Phrasebook
                             Class::Phrasebook::SQL
 
-  Copyright (c) 2001 EM-TECH (www.em-tech.net) & Rani Pinchuk.  
+  Copyright (c) 2001-2002 Ockham Technology N.V. & Rani Pinchuk.  
   All rights reserved.  
   This package is free software; you can redistribute it and/or 
   modify it under the same terms as Perl itself.
@@ -46,9 +46,9 @@ INSTALLATION
 
 AUTHOR NOTES
 
-  These classes are used for quite a long time in our company
-  EM-TECH. Yet, it is very new in CPAN. If there are problems,
-  suggestions or comments - please email me.
+  These classes are used for quite a long time in our company.
+  Yet, it is very new in CPAN. If there are problems, suggestions 
+  or comments - please email me.
 
 Rani Pinchuk
 rani@cpan.org
