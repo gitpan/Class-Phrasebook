@@ -1,5 +1,8 @@
 Revision history for Perl extension Class::Phrasebook.
 
+0.84  Thu Aug  1 12:01:23 CEST 2002
+	- Added the class method clean_out_of_scope_dictionaries.
+
 0.83  Mon Feb 25 10:48:57 CET 2002
 	- The classes now use bytes. I did this change because I found  
 	  out that the regular expressions sometimes work as unicode

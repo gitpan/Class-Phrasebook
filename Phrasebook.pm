@@ -2,7 +2,7 @@ package Class::Phrasebook;
 
 use strict;
 
-our $VERSION = '0.83';
+our $VERSION = '0.84';
 
 
 use Term::ANSIColor 1.03 qw(:constants);
@@ -14,6 +14,7 @@ use bytes;
 $Term::ANSIColor::AUTORESET = 1;
 
 my $Dictionaries_cache;
+my $Clean_out_of_scope_dictionaries = 1;
 
 #############################################################
 # new($log, $file_path)
@@ -70,7 +71,9 @@ sub DESTROY {
 	$Dictionaries_cache->{$self->{DICTIONARY_KEY}}{COUNTER}--;
 	# clean that dictionary from the cache if needed.
 	if ($Dictionaries_cache->{$self->{DICTIONARY_KEY}}{COUNTER} == 0) {
-	    delete($Dictionaries_cache->{$self->{DICTIONARY_KEY}});
+	    if ($Clean_out_of_scope_dictionaries) {
+		delete($Dictionaries_cache->{$self->{DICTIONARY_KEY}});
+	    }
 	}
     }
 
@@ -101,6 +104,15 @@ sub log {
     if (@_) { $self->{LOG} = shift }
     return $self->{LOG};
 } # of log
+
+###################################
+# clean_out_of_scope_dictionaries
+###################################
+sub clean_out_of_scope_dictionaries {
+    my $proto = shift; # get the class name
+    $Clean_out_of_scope_dictionaries = shift;
+    return $Clean_out_of_scope_dictionaries;
+} # of clean_out_of_scope_dictionaries
 
 #################
 # dictionary_name
@@ -147,7 +159,9 @@ sub load {
 
 	# clean that dictionary from the cache if needed.
 	if ($Dictionaries_cache->{$self->{DICTIONARY_KEY}}{COUNTER} == 0) {
-	    delete($Dictionaries_cache->{$self->{DICTIONARY_KEY}});
+	    if ($Clean_out_of_scope_dictionaries) {
+		delete($Dictionaries_cache->{$self->{DICTIONARY_KEY}});
+	    }
 	}
     }
     # zero the cache counter for that dictionary if this is the first time
@@ -686,7 +700,10 @@ and you produce many objects of that other class, you will not have in
 memory many copies of the loaded dictionaries of those objects. Actually you 
 will have one copy in memory for each dictionary that is loaded, no matter how 
 many objects load it. This copy will be deleted when all the objects that 
-refer to it go out of scope (like the Perl references).
+refer to it go out of scope (like the Perl references). You can fix that 
+any loaded dictionary will never go out of scope (till the process ends). 
+You do that by calling the class method B<clean_out_of_scope_dictionaries>
+with 0 as its argument.
 
 Beside being happy with the fact that you can use the Class::Phrasebook 
 within other objects without poluting the memory, you should know about 
@@ -716,6 +733,20 @@ case, that file will be searched in the following places:
 LOG is a Log object. If LOG is undef, NullLog object will be used. 
 If it is provided, the class will use the Log facilities to log unusual events.
 Returns the new object, or undef on failure.
+
+=back
+
+=head1 CLASS METHODS
+
+=over 4
+
+=item clean_out_of_scope_dictionaries( BOOLEAN )
+
+This method takes one argument. If it is 1 (TRUE), dictionaries will 
+be deleted from the cache when they go out of scope. If it is 0 (FALSE),
+the dictionaries will stay in the cache (till the program ends). 
+The default behaviour is that the dictionaries are deleted when they go
+out of scope (so 1).
 
 =back
 
