@@ -12,7 +12,7 @@ $Term::ANSIColor::AUTORESET = 1;
 use Devel::DumpStack qw(caller2);
 
 
-our $VERSION = '0.2';
+our $VERSION = '0.8';
 
 ###################################################################
 # $statement = get($key, { var1 => $value1, var2 => value2 ... })

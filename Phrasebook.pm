@@ -2,7 +2,7 @@ package Class::Phrasebook;
 
 use strict;
 
-our $VERSION = '0.2';
+our $VERSION = '0.8';
 
 
 use Term::ANSIColor 1.03 qw(:constants);
@@ -172,8 +172,11 @@ sub load {
             my $string = shift;
 	    # if $read_on flag is true and the string is not empty we set the 
 	    # value of the phrase.
-	    if ($read_on && $string =~ /\S/) {
-                $phrase_value .= $string."\n";
+	    if ($read_on && $string =~ /\S/) { 
+                # if we have already $phrase_value, we should add a new line 
+		# to it, before we add the next line.
+		$phrase_value .= "\n" if ($phrase_value);
+                $phrase_value .= $string;
             }
         } # of Char
     ); # of the parser setHandlers class

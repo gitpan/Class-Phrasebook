@@ -2,5 +2,10 @@ Revision history for Perl extension Class::Phrasebook.
 
 0.2   Fri Feb  9 15:21:28 CET 2001
 	- first distribution on CPAN
-
+0.8   Sat Dec 15 19:44:09 CET 2001
+	- Actually a very small fix, to have correctly the new lines 
+	  from the XML source. 
+	  Yet, I upgraded the VERSION number to 0.8, because we use
+	  this class for quite a time now, and had no problems expect
+	  this small fix.
 
