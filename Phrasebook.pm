@@ -2,7 +2,7 @@ package Class::Phrasebook;
 
 use strict;
 
-our $VERSION = '0.85';
+our $VERSION = '0.86';
 
 
 use Term::ANSIColor 1.03 qw(:constants);
@@ -520,7 +520,7 @@ sub get_xml_path {
     my $file = $self->{FILE_PATH};
 
     # first deal with absolute path
-    if ($file =~ /^\//) {
+    if (is_absolute_path($file)) {
 	if (-e $file) {
 	    return $file;
 	}
@@ -548,6 +548,24 @@ sub get_xml_path {
 	return undef;
     }
 } # of get_xml_path
+
+######################
+# is_absolute_path
+######################
+sub is_absolute_path {
+    my $path = shift;
+
+    unless (defined($path)) {
+        return 0;
+    }
+    # the different Operating Systems
+    my %operating_systems = ( "mswin32"  => '^(?:[a-zA-Z]:)?[\\\/]+',
+                              "linux"    => '^\/');    
+    my $os = lc($^O);
+    my $reg_expression = $operating_systems{$os} || 
+        $operating_systems{'linux'};
+    return $path =~ /$reg_expression/;
+} # is_absolute_path
 
 #########################
 # debug_print_variable

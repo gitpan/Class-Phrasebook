@@ -9,7 +9,7 @@ use bytes;
 # reset to normal at the end of each line.
 $Term::ANSIColor::AUTORESET = 1;
 
-our $VERSION = '0.85';
+our $VERSION = '0.86';
 
 ###################################################################
 # $statement = get($key, { var1 => $value1, var2 => value2 ... })
@@ -113,11 +113,14 @@ sub get {
 	# deal with updates in the following way:
 	# devide the statement to before the set, after the where and the rest
 	$statement =~ /(\sset\s)/i;
-	my $statement_before_set = $`.$&;
-	my $statement_after_where = $';
-	$statement_after_where =~ /(\swhere\s)/i;
-	$statement_after_where = $&.$';	
-	my $pairs = $`;
+	my $statement_before_set = $`.$&; # till and include the set
+	my $pairs = $'; # the rest
+	my $statement_after_where;
+	if ($pairs =~ /(\swhere\s)/i) { # if there is where
+	    $statement_after_where = $&.$'; # holds the where and anything
+	                                    # after it
+	    $pairs = $`; # holds only the pairs
+	}
 
 	# now $statement holds only the pairs we set. for each line, if 
 	# one of the variables is not defined, we remove that line.

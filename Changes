@@ -1,5 +1,11 @@
 Revision history for Perl extension Class::Phrasebook.
 
+0.86  Fri Nov  8 21:36:48 CET 2002
+	- Fixed a bug on Windows OS where absolute path was not 
+	  identified correctly. 
+	  Thanks for Andrew Alakozow that reported the bug and 
+	  supplied a patch.	
+
 0.85  Tue Sep 24 14:11:39 CEST 2002
         - Just fixed the copyright notice.  
 

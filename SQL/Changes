@@ -1,5 +1,9 @@
 Revision history for Perl extension Class::Phrasebook::SQL.
 
+0.86  Fri Nov  8 20:07:05 CET 2002
+	- Fixed a bug in update statement with no "where" clause.
+	  Thanks for Tiago Stock that submitted that bug report.
+
 0.2   Fri Feb  9 15:21:28 CET 2001
 	- first distribution on CPAN
 

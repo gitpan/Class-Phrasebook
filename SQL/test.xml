@@ -91,5 +91,10 @@
             delete from t_user
                  where account_id = $account_id
   </phrase>
+
+  <!-- update with no where - was a bug -->
+  <phrase name="UPDATE_NO_WHERE">
+    update table set i=1
+  </phrase>
  </dictionary>
 </phrasebook>

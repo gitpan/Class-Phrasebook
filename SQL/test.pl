@@ -6,7 +6,7 @@
 # Change 1..1 below to 1..last_test_to_print .
 # (It may become useful if the test is moved to ./t subdirectory.)
 
-BEGIN { $| = 1; print "1..14\n"; }
+BEGIN { $| = 1; print "1..15\n"; }
 END {print "not ok 1\n" unless $loaded;}
 use Class::Phrasebook::SQL;
 use Log::LogLite;
@@ -137,8 +137,12 @@ where',
 
 $statement = $sql->get("DELETE_USER", { account_id => 40});
 print_ok(clean_whites($statement) eq 
-	 clean_whites(q(delete from t_user
-			where account_id = 40)), 14, "simple delete");
+         clean_whites(q(delete from t_user
+                        where account_id = 40)), 14, "simple delete");
+
+$statement = $sql->get("UPDATE_NO_WHERE");
+print_ok(clean_whites($statement) eq 
+	 clean_whites(q(update table set i=1)), 15, "short update");
 
 
 
