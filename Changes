@@ -1,5 +1,28 @@
 Revision history for Perl extension Class::Phrasebook.
 
+0.83  Mon Feb 25 10:48:57 CET 2002
+	- The classes now use bytes. I did this change because I found  
+	  out that the regular expressions sometimes work as unicode
+	  and sometimes as bytes. What I prefer to have is kind of a
+	  class switch that will let the user of the class choose if
+	  he wants the class to run using 'bytes' or 'utf8'. I think
+	  that if the user uses encoding="UTF8" in his XML, he should
+	  be able to tell the class to run using 'utf8' pragma. But
+	  in other cases, the user might want to run it using the
+	  'bytes' pragma. But I don't know how to program such a
+	  switch between pragams. Probably, if it is a problem for
+	  you, you know more about unicode, and maybe you have an idea
+	  how to solve it. So please write me your ideas.
+
+        - Fixed the way the class reads the phrases from the XML file. 
+          Specifically - fixed the way white characters are treated.
+          Now the phrase will be accppted as it is between the tags 
+	  and will include all the white characters there.
+          Added the as_is_between_tags method, and the 
+	  PHRASEBOOK_AS_IS_BETWEEN_TAGS environment to provide the 
+          ability to get back to the old behavior of the classes -
+          for legacy purposes.
+
 0.82  Fri Feb  8 09:42:43 CET 2002
 	- The dictionaries are cached now in a class data.
 

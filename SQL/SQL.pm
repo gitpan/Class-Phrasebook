@@ -4,12 +4,12 @@ use Class::Phrasebook;
 our @ISA = qw (Class::Phrasebook);
 
 use strict;
-
 use Term::ANSIColor qw(:constants);
+use bytes;
 # reset to normal at the end of each line.
 $Term::ANSIColor::AUTORESET = 1;
 
-our $VERSION = '0.82';
+our $VERSION = '0.83';
 
 ###################################################################
 # $statement = get($key, { var1 => $value1, var2 => value2 ... })

@@ -2,15 +2,14 @@ package Class::Phrasebook;
 
 use strict;
 
-our $VERSION = '0.82';
+our $VERSION = '0.83';
 
 
 use Term::ANSIColor 1.03 qw(:constants);
 use strict;
 use XML::Parser 2.30;
 use Log::NullLogLite 0.2;
-use Cwd;
-use Data::Dumper;
+use bytes;
 # reset to normal at the end of each line.
 $Term::ANSIColor::AUTORESET = 1;
 
@@ -44,6 +43,14 @@ sub new {
     # loaded.
     $self->{DICTIONARY_KEY} = "";
     $self->{PHRASES} = {};
+    # defaults
+    if (defined($ENV{PHRASEBOOK_AS_IS_BETWEEN_TAGS})) {
+	$self->{AS_IS_BETWEEN_TAGS} = $ENV{PHRASEBOOK_AS_IS_BETWEEN_TAGS};
+    }
+    else {
+	$self->{AS_IS_BETWEEN_TAGS} = 1; # set by default
+    }
+    $self->{REMOVE_NEW_LINES} = 0;
     return $self;
 } # of new
 
@@ -112,6 +119,15 @@ sub remove_new_lines {
     if (@_) { $self->{REMOVE_NEW_LINES} = shift }
     return $self->{REMOVE_NEW_LINES};
 } # of remove_new_lines
+
+#####################
+# as_is_between_tags
+#####################
+sub as_is_between_tags {
+    my $self = shift;
+    if (@_) { $self->{AS_IS_BETWEEN_TAGS} = shift }
+    return $self->{AS_IS_BETWEEN_TAGS};
+} # of as_is_between_tags
 
 ####################################
 # load($dictionary_name)
@@ -214,6 +230,12 @@ sub load {
                     return 0; # we must have name
                 }
             }
+	    if ($self->{AS_IS_BETWEEN_TAGS}) {
+		# we should clean the $phrase_value after the start of the tag
+		# so in the phrase we will have only the text that is between
+		# the phrase tags.
+		$phrase_value = "";
+	    }	    
         }, # of Start
 	
         End => sub {
@@ -236,12 +258,19 @@ sub load {
             my $string = shift;
 	    # if $read_on flag is true and the string is not empty we set the 
 	    # value of the phrase.
-	    if ($read_on && $string =~ /\S/) { 
-                # if we have already $phrase_value, we should add a new line 
-		# to it, before we add the next line.
-		$phrase_value .= "\n" if ($phrase_value);
-                $phrase_value .= $string;
-            }
+	    if ($self->{AS_IS_BETWEEN_TAGS}) {
+		if ($read_on && length($string)) {
+		    $phrase_value .= $string;
+		}		
+	    }
+	    else { # this block is here for legacy reasons.
+		if ($read_on && $string =~ /[\S]/) { 
+		    # if we have already $phrase_value, we should add a 
+		    # new line to it, before we add the next line.
+		    $phrase_value .= "\n" if ($phrase_value);
+		    $phrase_value .= $string;
+		}
+	    }
         } # of Char
     ); # of the parser setHandlers class
 
@@ -722,8 +751,18 @@ Access method to the DICTIONARY_NAME data member. See I<load> method above.
 
 Access method to the data member REMOVE_NEW_LINES flag. If this data member 
 is true (1), then new lines will be removed from the phrase that a is 
-returned by the method I<get>.
+returned by the method I<get>. Unset by default.
 Returns the value of the data member REMOVE_NEW_LINES flag.
+
+=item as_is_between_tags ( BOOLEAN )
+
+Access method to the data member AS_IS_BETWEEN_TAGS flag. Set by default.
+In the past releases, the class did not deal correctly with spaces and 
+new lines. When this flag is unset, the class will continue in its old 
+behavior. So if the new - correct - behavior breaks your code, you can go
+back to the old behavior. See also the environment variable 
+PHRASEBOOK_AS_IS_BETWEEN_TAGS.
+Returns the value of the data member AS_IS_BETWEEN_TAGS flag.
 
 =back
 
@@ -768,6 +807,12 @@ information will be printed in HTML format. If the environment is set to
 "TEXT" - the information will be printed as simple text. If the environment 
 is not set, or empty - nothing will be printed. This feature comes to help
 debugging the phrases that we get from the object of this class.
+
+=item PHRASEBOOK_AS_IS_BETWEEN_TAGS
+
+This environment variable control the default setting of the data member 
+AS_IS_BETWEEN_TAGS. If it is unset, that data member is 1 by default. 
+See the method B<as_is_between_tags> for more information.
 
 =back
 
