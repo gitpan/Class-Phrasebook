@@ -1,13 +1,19 @@
 Revision history for Perl extension Class::Phrasebook.
 
-0.2   Fri Feb  9 15:21:28 CET 2001
-	- first distribution on CPAN
+0.82  Fri Feb  8 09:42:43 CET 2002
+	- The dictionaries are cached now in a class data.
+
+0.81  Sat Jan 19 19:08:56 CET 2002
+	- At last the Devel::CallerItem is removed from this class.
+	  Instead I use the caller build-in-function.0.8   
+
 0.8   Sat Dec 15 19:44:09 CET 2001
 	- Actually a very small fix, to have correctly the new lines 
 	  from the XML source. 
 	  Yet, I upgraded the VERSION number to 0.8, because we use
 	  this class for quite a time now, and had no problems expect
 	  this small fix.
-0.81  Sat Jan 19 19:08:56 CET 2002
-	- At last the Devel::CallerItem is removed from this class.
-	  Instead I use the caller build-in-function.
+
+0.2   Fri Feb  9 15:21:28 CET 2001
+	- first distribution on CPAN
+

@@ -2,7 +2,7 @@ package Class::Phrasebook;
 
 use strict;
 
-our $VERSION = '0.81';
+our $VERSION = '0.82';
 
 
 use Term::ANSIColor 1.03 qw(:constants);
@@ -10,10 +10,11 @@ use strict;
 use XML::Parser 2.30;
 use Log::NullLogLite 0.2;
 use Cwd;
-
+use Data::Dumper;
 # reset to normal at the end of each line.
 $Term::ANSIColor::AUTORESET = 1;
 
+my $Dictionaries_cache;
 
 #############################################################
 # new($log, $file_path)
@@ -34,11 +35,39 @@ sub new {
     $self->{FILE_PATH} = $self->get_xml_path($self->{FILE_PATH});
     unless ($self->{FILE_PATH}) {
 	return undef;
-    }
+    }    
 
+    # get the file name for using as part of the key of the dictionary
+    $self->{FILE_PATH} =~ /[^\/]+$/;
+    $self->{FILE_NAME} = $&;
+    # dictionary key holds a representative key for the dictionary that is 
+    # loaded.
+    $self->{DICTIONARY_KEY} = "";
     $self->{PHRASES} = {};
     return $self;
 } # of new
+
+##############################
+# Dictionaries_names_in_cache
+##############################
+sub Dictionaries_names_in_cache {    
+    return keys ( % { $Dictionaries_cache } );
+} # of Dictionaries_names_in_cache
+
+###############
+# DESTROY
+###############
+sub DESTROY {
+    my $self = shift;
+    if ($self->{DICTIONARY_KEY}) {	
+	$Dictionaries_cache->{$self->{DICTIONARY_KEY}}{COUNTER}--;
+	# clean that dictionary from the cache if needed.
+	if ($Dictionaries_cache->{$self->{DICTIONARY_KEY}}{COUNTER} == 0) {
+	    delete($Dictionaries_cache->{$self->{DICTIONARY_KEY}});
+	}
+    }
+
+} # of DESTROY
 
 #################
 # file_path
@@ -89,7 +118,42 @@ sub remove_new_lines {
 ####################################
 sub load {
     my $self = shift;
-    my $requested_dictionary_name = shift;
+    my $requested_dictionary_name = shift || "";
+    # get a unique key that represents this dictionary of that file.
+    my $dictionary_key = 
+	$self->{FILE_NAME}."/".$requested_dictionary_name;
+    # if the object already loaded a dictionary, and now it loads other 
+    # dictionary, we should reduce the counter of the dictionary that was
+    # loaded till now.
+    if ($self->{DICTIONARY_KEY} && 
+	$self->{DICTIONARY_KEY} ne $dictionary_key) {
+	$Dictionaries_cache->{$self->{DICTIONARY_KEY}}{COUNTER}--;
+
+	# clean that dictionary from the cache if needed.
+	if ($Dictionaries_cache->{$self->{DICTIONARY_KEY}}{COUNTER} == 0) {
+	    delete($Dictionaries_cache->{$self->{DICTIONARY_KEY}});
+	}
+    }
+    # zero the cache counter for that dictionary if this is the first time
+    # that this dictionary is loaded
+    if (!defined($Dictionaries_cache->{$dictionary_key}) ||
+	!defined($Dictionaries_cache->{$dictionary_key}{COUNTER})) {
+	$Dictionaries_cache->{$dictionary_key}{COUNTER} = 0;
+    }
+    # keep the dictionary key
+    $self->{DICTIONARY_KEY} = $dictionary_key;
+    # and increment the counter of this dictionary
+    $Dictionaries_cache->{$self->{DICTIONARY_KEY}}{COUNTER}++;
+    # the the dictionaries cache keeps the phrases of all the dictionaries
+    if (defined($Dictionaries_cache->{$self->{DICTIONARY_KEY}}) &&
+	defined($Dictionaries_cache->{$self->{DICTIONARY_KEY}}{PHRASES}) &&
+	ref($Dictionaries_cache->{$self->{DICTIONARY_KEY}}{PHRASES}) 
+	eq "HASH") {
+	$self->{PHRASES} = 
+	    $Dictionaries_cache->{$self->{DICTIONARY_KEY}}{PHRASES};
+	return 1;
+    }
+    
     # the load may set the data member DICTIONARY_NAME. On the other hand
     # if the requested_dictionary_name is not defined, we will try to use
     # the data member.
@@ -197,6 +261,9 @@ sub load {
     }
 
     $self->{PHRASES} = $phrases;
+    # keep the phrases 
+    $Dictionaries_cache->{$self->{DICTIONARY_KEY}}{PHRASES} = $self->{PHRASES};
+
     return 1; # success 
 } # of load
 
@@ -583,6 +650,25 @@ Example for XML file:
 Each phrase should have a unique name. Within the phrase text we can 
 place placeholders. When get method is called, those placeholders will be 
 replaced by their value.
+
+The dictionaries that are loaded by object of this class, are cached in 
+a class member. This means that if you use this class within other class, 
+and you produce many objects of that other class, you will not have in 
+memory many copies of the loaded dictionaries of those objects. Actually you 
+will have one copy in memory for each dictionary that is loaded, no matter how 
+many objects load it. This copy will be deleted when all the objects that 
+refer to it go out of scope (like the Perl references).
+
+Beside being happy with the fact that you can use the Class::Phrasebook 
+within other objects without poluting the memory, you should know about 
+one possible flow in that caching - if the dictionary is changed but its 
+name and the name of the XML file that holds it remain the same, the 
+new dictionary will not be loaded even if the B<load> method is called.
+
+Because it is not the intention to have this kind of situation (changing 
+the dictionary while the program is already running), the one that is 
+crazy enough to have this kind of need, invited to email the author, and 
+a B<force_load> method might be added to this class.
 
 =head1 CONSTRUCTOR
 

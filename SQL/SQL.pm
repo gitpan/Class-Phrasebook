@@ -9,7 +9,7 @@ use Term::ANSIColor qw(:constants);
 # reset to normal at the end of each line.
 $Term::ANSIColor::AUTORESET = 1;
 
-our $VERSION = '0.81';
+our $VERSION = '0.82';
 
 ###################################################################
 # $statement = get($key, { var1 => $value1, var2 => value2 ... })

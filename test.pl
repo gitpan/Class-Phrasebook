@@ -1,6 +1,6 @@
 # Before `make install' is performed this script should be runnable with
 # `make test'. After `make install' it should work as `perl test.pl'
-BEGIN { $| = 1; print "1..10\n"; }
+BEGIN { $| = 1; print "1..16\n"; }
 END {print "not ok 1\n" unless $loaded;}
 use Class::Phrasebook;
 use Log::LogLite;
@@ -54,6 +54,52 @@ print_ok(clean_whites($phrase) eq clean_whites("10 + 11 = 21"), 9,
 $phrase = $pb->get("THE_AUTHOR");
 print_ok(clean_whites($phrase) eq clean_whites("Rani Pinchuk"), 10, 
 	 "get from the default dictionary");
+
+my $pbs;
+for (my $i = 0; $i < 10; $i++) {
+    $pbs->[$i] = new Class::Phrasebook($log, "test.xml");
+    $pbs->[$i]->load("EN");
+}
+for (my $i = 10; $i < 15; $i++) {
+    $pbs->[$i] = new Class::Phrasebook($log, "test.xml");
+    $pbs->[$i]->load("NL");
+}
+
+# the phrases of all the first ten objects suppose to be kept in the same hash:
+print_ok($pbs->[0]{PHRASES} == $pbs->[1]{PHRASES} && 
+	 $pbs->[1]{PHRASES} == $pbs->[2]{PHRASES} && 
+	 $pbs->[2]{PHRASES} == $pbs->[3]{PHRASES} && 
+	 $pbs->[3]{PHRASES} == $pbs->[4]{PHRASES} && 
+	 $pbs->[4]{PHRASES} == $pbs->[5]{PHRASES} && 
+	 $pbs->[5]{PHRASES} == $pbs->[6]{PHRASES} && 
+	 $pbs->[6]{PHRASES} == $pbs->[7]{PHRASES} && 
+	 $pbs->[7]{PHRASES} == $pbs->[8]{PHRASES} && 
+	 $pbs->[8]{PHRASES} == $pbs->[9]{PHRASES} &&
+	 $pbs->[10]{PHRASES} == $pbs->[11]{PHRASES} && 
+	 $pbs->[11]{PHRASES} == $pbs->[12]{PHRASES} && 
+	 $pbs->[12]{PHRASES} == $pbs->[13]{PHRASES} && 
+	 $pbs->[13]{PHRASES} == $pbs->[14]{PHRASES}, 11, 
+	 "caching phrases of the same dictionary");
+print_ok($pbs->[9]{PHRASES} != $pbs->[10]{PHRASES}, 12,
+	 "caching phrases of the different dictionaries");
+print_ok(Class::Phrasebook->Dictionaries_names_in_cache() == 2, 13, 
+	 "cache holds two dictionaries - NL and EN");
+# keep one of the objects and delete the rest
+$pb = $pbs->[5];
+$pbs = undef;
+# try a simple get on the object we kept. the EN dictionary should be 
+# still available.
+$phrase = $pb->get("HELLO_WORLD");
+print_ok(clean_whites($phrase) eq clean_whites("Hello World!!!"), 14, 
+	 "checking the cache with a simple get");
+print_ok(Class::Phrasebook->Dictionaries_names_in_cache() == 1, 15, 
+	 "cache holds one dictionaries - EN");
+$pb = undef;
+print_ok(Class::Phrasebook->Dictionaries_names_in_cache() == 0, 16, 
+	 "cache is empty");
+
+
+
 
 #######################
 # clean_whites
