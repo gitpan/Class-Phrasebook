@@ -2,7 +2,7 @@ package Class::Phrasebook;
 
 use strict;
 
-our $VERSION = '0.8';
+our $VERSION = '0.81';
 
 
 use Term::ANSIColor 1.03 qw(:constants);
@@ -337,8 +337,6 @@ sub get {
     return $phrase;
 } # of get
 
-use Devel::DumpStack qw(caller2);
-    
 #######################
 # called_by
 #######################
@@ -351,10 +349,15 @@ sub called_by {
     my $subr; 
     my $has_args;
     my $wantarray;
+    my $evaltext; 
+    my $is_require; 
+    my $hints; 
+    my $bitmask;
     my @subr;
     my $str = "";
     while ($depth < 7) {
-        ($args,$pack,$file,$line,$subr,$has_args,$wantarray) = caller2($depth);
+	($pack, $file, $line, $subr, $has_args, $wantarray, 
+	 $evaltext, $is_require, $hints, $bitmask) = caller($depth);
         unless (defined($subr)) {
             last;
         }

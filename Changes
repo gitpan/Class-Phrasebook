@@ -8,4 +8,6 @@ Revision history for Perl extension Class::Phrasebook.
 	  Yet, I upgraded the VERSION number to 0.8, because we use
 	  this class for quite a time now, and had no problems expect
 	  this small fix.
-
+0.81  Sat Jan 19 19:08:56 CET 2002
+	- At last the Devel::CallerItem is removed from this class.
+	  Instead I use the caller build-in-function.

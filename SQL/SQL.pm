@@ -9,10 +9,7 @@ use Term::ANSIColor qw(:constants);
 # reset to normal at the end of each line.
 $Term::ANSIColor::AUTORESET = 1;
 
-use Devel::DumpStack qw(caller2);
-
-
-our $VERSION = '0.8';
+our $VERSION = '0.81';
 
 ###################################################################
 # $statement = get($key, { var1 => $value1, var2 => value2 ... })
@@ -324,11 +321,9 @@ sub debug_print_variable {
     return "\$".$key;
 } # of debug_print_varibale
 
-
 #######################
 # called_by
 #######################
-# helper function
 sub called_by {
     my $depth = 2;
     my $args; 
@@ -338,16 +333,21 @@ sub called_by {
     my $subr; 
     my $has_args;
     my $wantarray;
+    my $evaltext; 
+    my $is_require; 
+    my $hints; 
+    my $bitmask;
     my @subr;
     my $str = "";
     while ($depth < 7) {
-        ($args,$pack,$file,$line,$subr,$has_args,$wantarray) = caller2($depth);
+	($pack, $file, $line, $subr, $has_args, $wantarray, 
+	 $evaltext, $is_require, $hints, $bitmask) = caller($depth);
         unless (defined($subr)) {
             last;
         }
-        $depth++;               
+        $depth++;       	
         $line = "$file:".$line."-->";
-        push(@subr, $line.$subr);
+	push(@subr, $line.$subr);
     }
     @subr = reverse(@subr);
     foreach $subr (@subr) {
